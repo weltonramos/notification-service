@@ -1,4 +1,4 @@
-package com.weltonramos.notification_service;
+package com.weltonramos.notification;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
