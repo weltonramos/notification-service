@@ -5,5 +5,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserPreferencesRepository extends MongoRepository<UserPreferencesEntity, String> {
+public interface NotificationRepository extends MongoRepository<UserPreferencesEntity, String> {
 }
