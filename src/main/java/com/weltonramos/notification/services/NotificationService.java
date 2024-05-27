@@ -10,6 +10,6 @@ public interface NotificationService {
 
     NotificationResponse sendNotification(Notification notification);
 
-    void updateOptOut(String userId);
+    void updateOptOut(String userId, UserPreferentecesDto userPreferences);
 
 }
