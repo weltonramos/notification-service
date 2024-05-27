@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.Instant;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +20,11 @@ public class UserPreferencesEntity {
     private String phoneNumber;
     private boolean optOut;
     private String deviceToken;
-    private String createdAt;
-    private String updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
+
+    public boolean isDisabledNotifications() {
+        return this.optOut;
+    }
 
 }

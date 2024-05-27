@@ -30,8 +30,8 @@ public class NotificationController {
     }
 
     @PatchMapping("/user-preferences/{userId}")
-    public ResponseEntity<Void> updateOptOut(@PathVariable("userId") String userId) {
-        service.updateOptOut(userId);
+    public ResponseEntity<Void> updateUserPreferences(@PathVariable("userId") String userId, @RequestBody UserPreferentecesDto userPreferentecesDto) {
+        service.updateOptOut(userId, userPreferentecesDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
