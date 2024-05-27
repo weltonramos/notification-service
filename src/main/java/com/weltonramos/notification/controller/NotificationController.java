@@ -1,6 +1,7 @@
 package com.weltonramos.notification.controller;
 
 import com.weltonramos.notification.dto.Notification;
+import com.weltonramos.notification.dto.NotificationResponse;
 import com.weltonramos.notification.dto.UserPreferentecesDto;
 import com.weltonramos.notification.services.NotificationService;
 import org.springframework.http.HttpStatus;
@@ -8,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("v1/notifications")
+@RequestMapping(value = "v1/notifications")
 public class NotificationController {
 
     private final NotificationService service;
@@ -24,9 +25,8 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> sendNotification(@RequestBody Notification notification) {
-        service.sendNotification(notification);
-        return ResponseEntity.status(HttpStatus.OK).build();
+    public ResponseEntity<NotificationResponse> sendNotification(@RequestBody Notification notification) {
+        return ResponseEntity.ok(service.sendNotification(notification));
     }
 
     @PatchMapping("/user-preferences/{userId}")

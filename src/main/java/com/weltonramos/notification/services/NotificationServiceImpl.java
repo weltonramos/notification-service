@@ -2,8 +2,8 @@ package com.weltonramos.notification.services;
 
 import com.weltonramos.notification.domain.UserPreferencesEntity;
 import com.weltonramos.notification.dto.Notification;
+import com.weltonramos.notification.dto.NotificationResponse;
 import com.weltonramos.notification.dto.UserPreferentecesDto;
-import com.weltonramos.notification.exception.MessageNotificationNowAllowedException;
 import com.weltonramos.notification.exception.UserNotFoundException;
 import com.weltonramos.notification.repository.NotificationRepository;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
@@ -43,17 +43,20 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendNotification(Notification notification) {
+    public NotificationResponse sendNotification(Notification notification) {
 
         String userId = notification.getUserId();
         UserPreferencesEntity userPreferences = repository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User " + userId + " not found."));
 
-        if (!userPreferences.isOptOut())
-            throw new MessageNotificationNowAllowedException("Customer " + userId + " do not allow notifications.");
+        if (userPreferences.isOptOut())
+            return new NotificationResponse(String.format("User %s allow messages.", userId));
 
         notification.getNotificationChannel()
                 .forEach(item -> sqsTemplate.send(emailMessageQueueUrl, notification));
+
+
+        return new NotificationResponse(String.format("Messages submted by %s", notification.getNotificationChannel()));
     }
 
     @Override
