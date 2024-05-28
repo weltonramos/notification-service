@@ -1,11 +1,13 @@
 package com.weltonramos.notification.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.weltonramos.notification.domain.UserPreferencesEntity;
 import com.weltonramos.notification.dto.Notification;
 import com.weltonramos.notification.dto.NotificationResponse;
 import com.weltonramos.notification.dto.UserPreferentecesDto;
 import com.weltonramos.notification.exception.UserNotFoundException;
-import com.weltonramos.notification.repository.NotificationRepository;
+import com.weltonramos.notification.repositories.NotificationRepository;
 import io.awspring.cloud.sqs.operations.SqsTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,9 @@ import java.time.Instant;
 
 @Service
 public class NotificationServiceImpl implements NotificationService {
+
+    @Value("${web.message.queue}")
+    private String webMessageQueueUrl;
 
     @Value("${email.message.queue}")
     private String emailMessageQueueUrl;
@@ -44,26 +49,33 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public NotificationResponse sendNotification(Notification notification) {
+    public NotificationResponse sendNotification(Notification notification) throws JsonProcessingException {
 
         String userId = notification.getUserId();
-        UserPreferencesEntity userPreferences = repository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User " + userId + " not found."));
+        UserPreferencesEntity userPreferencesEntity = getUserPreferences(userId);
 
-        if (userPreferences.isDisabledNotifications())
+        if (userPreferencesEntity.isDisabledNotifications())
             return new NotificationResponse(String.format("User %s do not allow messages.", userId));
 
-        notification.getNotificationChannel()
-                .forEach(item -> sqsTemplate.send(emailMessageQueueUrl, notification));
+        String messageInJson = jsonConverter(notification);
 
-        return new NotificationResponse(String.format("Messages submted by %s", notification.getNotificationChannel()));
+        notification.getNotificationChannels()
+                .forEach(item -> sqsTemplate.send(webMessageQueueUrl, messageInJson));
+
+        return new NotificationResponse("Messages submeted.");
+    }
+
+    private static String jsonConverter(Notification notification) throws JsonProcessingException {
+        return new ObjectMapper()
+                .writer()
+                .withDefaultPrettyPrinter()
+                .writeValueAsString(notification);
     }
 
     @Override
-    public void updateOptOut(String userId, UserPreferentecesDto userPreferences) {
+    public void updateUserPreferences(String userId, UserPreferentecesDto userPreferences) {
 
-        UserPreferencesEntity userPreferencesEntity = repository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User " + userId + " not found."));
+        UserPreferencesEntity userPreferencesEntity = getUserPreferences(userId);
 
         userPreferencesEntity.setEmail(userPreferences.getEmail());
         userPreferencesEntity.setPhoneNumber(userPreferences.getPhoneNumber());
@@ -71,5 +83,10 @@ public class NotificationServiceImpl implements NotificationService {
         userPreferencesEntity.setUpdatedAt(Instant.now());
 
         repository.save(userPreferencesEntity);
+    }
+
+    private UserPreferencesEntity getUserPreferences(String userId) {
+        return repository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User " + userId + " not found."));
     }
 }
