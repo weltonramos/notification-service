@@ -1,4 +1,4 @@
-package com.weltonramos.notification.repository;
+package com.weltonramos.notification.repositories;
 
 import com.weltonramos.notification.domain.UserPreferencesEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;

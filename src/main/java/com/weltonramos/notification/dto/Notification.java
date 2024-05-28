@@ -17,6 +17,6 @@ public class Notification {
     private String userId;
     private String subject;
     private String message;
-    private Set<NotificationChannel> notificationChannel;
+    private Set<NotificationChannel> notificationChannels;
 
 }

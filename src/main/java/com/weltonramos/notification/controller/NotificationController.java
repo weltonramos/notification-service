@@ -1,5 +1,6 @@
 package com.weltonramos.notification.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.weltonramos.notification.dto.Notification;
 import com.weltonramos.notification.dto.NotificationResponse;
 import com.weltonramos.notification.dto.UserPreferentecesDto;
@@ -25,13 +26,13 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<NotificationResponse> sendNotification(@RequestBody Notification notification) {
+    public ResponseEntity<NotificationResponse> sendNotification(@RequestBody Notification notification) throws JsonProcessingException {
         return ResponseEntity.ok(service.sendNotification(notification));
     }
 
     @PatchMapping("/user-preferences/{userId}")
     public ResponseEntity<Void> updateUserPreferences(@PathVariable("userId") String userId, @RequestBody UserPreferentecesDto userPreferentecesDto) {
-        service.updateOptOut(userId, userPreferentecesDto);
+        service.updateUserPreferences(userId, userPreferentecesDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
