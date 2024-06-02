@@ -23,7 +23,7 @@ public class UserPreferencesEntity {
     private Instant createdAt;
     private Instant updatedAt;
 
-    public boolean isDisabledNotifications() {
+    public boolean isOptOutSigned() {
         return this.optOut;
     }
 

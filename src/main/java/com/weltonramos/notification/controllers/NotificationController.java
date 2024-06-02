@@ -1,7 +1,7 @@
 package com.weltonramos.notification.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.weltonramos.notification.dto.Notification;
+import com.weltonramos.notification.dto.NotificationData;
 import com.weltonramos.notification.dto.NotificationResponse;
 import com.weltonramos.notification.services.NotificationService;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class NotificationController {
     }
 
     @PostMapping
-    public ResponseEntity<NotificationResponse> sendNotification(@RequestBody Notification notification) throws JsonProcessingException {
-        return ResponseEntity.ok(service.sendNotification(notification));
+    public ResponseEntity<NotificationResponse> sendMessage(@RequestBody NotificationData notificationData) throws JsonProcessingException {
+        return ResponseEntity.ok(service.sendMessage(notificationData));
     }
 }
